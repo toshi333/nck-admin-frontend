@@ -8,11 +8,22 @@
             <div class="flex-grow-1"></div>
           </v-app-bar>
           <v-card-text>
-            <v-text-field label="社員" class="purple-input" />
-            <v-text-field label="社員" class="purple-input" />
-            <v-btn color="primary">
-              検索
-            </v-btn>
+            <v-row wrap>
+              <v-col>
+                <v-text-field label="社員番号" v-model="filterUserCode" />
+              </v-col>
+              <v-col>
+                <v-text-field label="社員名" v-model="filterUserName" />
+              </v-col>
+              <v-col>
+                <UtilTeamCombobox v-model="filterUserTeam" />
+              </v-col>
+              <v-col>
+                <v-btn color="primary" @click="getData()">
+                  検索
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-card-text>
           <v-card-text>
             <v-card>
@@ -58,6 +69,9 @@
 <script>
 export default {
   data: () => ({
+    filterUserCode: '',
+    filterUserName: '',
+    filterUserTeam: null,
     loading: true,
     snack: false,
     snackColor: '',
@@ -74,6 +88,7 @@ export default {
       { text: '--操作--', value: 'action', sortable: false },
       { text: '社員番号', align: 'left', value: 'code' },
       { text: '名前', value: 'username' },
+      { text: '所属', value: 'team.name' },
       { text: 'email', value: 'email' },
       { text: '管理者', value: 'is_staff' },
       { text: '有効', value: 'is_active' },
@@ -89,7 +104,7 @@ export default {
   methods: {
     getData() {
       this.$store
-        .dispatch('getTableList', '/auth/user/')
+        .dispatch('getTableList', `/auth/user/${this.searchKey()}`)
         .then(response => {
           console.log(response)
           this.UserList = response
@@ -126,6 +141,14 @@ export default {
             this.snack = true
           })
       }
+    },
+
+    searchKey() {
+      let searchKey = `?code=${this.filterUserCode}&last_name=${this.filterUserName}`
+      if (this.filterUserTeam) {
+        searchKey = searchKey + '&team=' + this.filterUserTeam.id
+      }
+      return searchKey
     },
   },
 }

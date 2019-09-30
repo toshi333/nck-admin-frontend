@@ -29,13 +29,17 @@
               <v-col cols="12" sm="6">
                 <v-text-field label="社員番号" v-model="user.code" />
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col>
+                <UtilTeamCombobox v-model="user.team" />
+              </v-col>
+              <v-col cols="12" sm="12">
                 <v-text-field
                   label="メール"
                   v-model="user.email"
                   :readonly="isCreate"
                 />
               </v-col>
+
               <v-col cols="12" sm="6">
                 <v-text-field label="性" v-model="user.last_name" />
               </v-col>
@@ -56,6 +60,7 @@ export default {
   data: () => ({
     endpoint: '/auth/user/',
     user: {},
+    teamList: {},
     isCreate: false,
     loading: false,
   }),

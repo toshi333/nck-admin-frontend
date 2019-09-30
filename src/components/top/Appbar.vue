@@ -1,9 +1,9 @@
 <template>
   <v-app-bar app height="56" dark>
     <v-tabs>
-      <v-tab to="/">新着</v-tab>
-      <v-tab to="/hello">ToDo</v-tab>
-      <v-tab>Item Three</v-tab>
+      <v-tab>TODO</v-tab>
+      <v-tab>チャット</v-tab>
+      <v-tab>作業表</v-tab>
     </v-tabs>
     <div class="flex-grow-1" />
 
