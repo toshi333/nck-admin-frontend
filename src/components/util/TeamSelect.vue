@@ -1,12 +1,13 @@
 <template>
-  <v-combobox
+  <v-select
     v-model="internalValue"
     :items="entries"
     item-value="id"
     item-text="name"
     label="所属"
+    clearable
     return-object
-  ></v-combobox>
+  ></v-select>
 </template>
 
 <script>

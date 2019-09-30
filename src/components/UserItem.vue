@@ -30,7 +30,7 @@
                 <v-text-field label="社員番号" v-model="user.code" />
               </v-col>
               <v-col>
-                <UtilTeamCombobox v-model="user.team" />
+                <UtilTeamSelect v-model="user.team" />
               </v-col>
               <v-col cols="12" sm="12">
                 <v-text-field

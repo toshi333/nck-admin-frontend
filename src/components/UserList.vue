@@ -16,7 +16,7 @@
                 <v-text-field label="社員名" v-model="filterUserName" />
               </v-col>
               <v-col>
-                <UtilTeamCombobox v-model="filterUserTeam" />
+                <UtilTeamSelect v-model="filterUserTeam" />
               </v-col>
               <v-col>
                 <v-btn color="primary" @click="getData()">
