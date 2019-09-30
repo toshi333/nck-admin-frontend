@@ -41,7 +41,6 @@
               </v-col>
               <v-col cols="12" sm="6">
                 <v-text-field label="名" v-model="user.first_name" />
-                {{ user.first_name }}
               </v-col>
             </v-row>
           </v-card-text>
