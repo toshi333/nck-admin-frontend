@@ -13,12 +13,8 @@ export default {
         })
         .then(response => {
           const token = response.data.key
-          const user = response.data.username
-          console.log(response)
-          // storing jwt in localStorage. https cookie is safer place to store
-          localStorage.setItem('token', token)
-          localStorage.setItem('user', user)
-          axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
+          const user = response.data.user
+          axios.defaults.headers.common['Authorization'] = 'Token ' + token
           // mutation to change state properties to the values passed along
           commit('auth_success', { token, user })
           resolve(response)
@@ -26,7 +22,6 @@ export default {
         .catch(err => {
           console.log('login error')
           commit('auth_error')
-          localStorage.removeItem('token')
           reject(err)
         })
     })
@@ -34,34 +29,18 @@ export default {
   logout({ commit }) {
     return new Promise((resolve, reject) => {
       commit('logout')
+      delete axios.defaults.headers.common['Authorization']
       axios
         .post('/auth/logout/')
         .then(() => {
-          localStorage.removeItem('token')
-          delete axios.defaults.headers.common['Authorization']
+          console.log('logout')
           resolve()
         })
         .catch(err => {
-          console.log('login error')
+          console.log('logout error')
           reject(err)
         })
     })
-  },
-  refreshtoken({ commit }) {
-    axios
-      .get('/refresh')
-      .then(response => {
-        const token = response.data.access_token
-        localStorage.setItem('token', token)
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
-        commit('auth_success', { token })
-      })
-      .catch(error => {
-        console.log('refresh token error')
-        commit('logout')
-        localStorage.removeItem('token')
-        console.log(error)
-      })
   },
   // eslint-disable-next-line no-unused-vars
   getTableList({ commit }, endpoint) {
@@ -69,11 +48,13 @@ export default {
       axios
         .get(endpoint)
         .then(response => {
-          console.log(response)
           resolve(response.data)
         })
         .catch(err => {
-          console.log(err)
+          if (err.response.status == 403) {
+            commit('logout')
+            delete axios.defaults.headers.common['Authorization']
+          }
           reject(err)
         })
     })
@@ -85,11 +66,13 @@ export default {
       axios
         .get(ep)
         .then(response => {
-          console.log(response)
           resolve(response.data)
         })
         .catch(err => {
-          console.log(err)
+          if (err.response.status == 403) {
+            commit('logout')
+            delete axios.defaults.headers.common['Authorization']
+          }
           reject(err)
         })
     })
@@ -105,9 +88,12 @@ export default {
         .then(response => {
           resolve(response)
         })
-        .catch(error => {
-          console.log(error)
-          reject(error)
+        .catch(err => {
+          if (err.response.status == 403) {
+            commit('logout')
+            delete axios.defaults.headers.common['Authorization']
+          }
+          reject(err)
         })
     })
   },

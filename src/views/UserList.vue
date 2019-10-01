@@ -107,7 +107,7 @@ export default {
         .dispatch('getTableList', `/auth/user/${this.searchKey()}`)
         .then(response => {
           console.log(response)
-          this.UserList = response
+          this.UserList = response.results
           this.loading = false
         })
         .catch(error => console.log(error))

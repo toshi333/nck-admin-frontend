@@ -2,6 +2,6 @@
 
 export default {
   authStatus: '',
-  token: localStorage.getItem('token') || '',
+  token: '',
   user: {},
 }

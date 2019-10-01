@@ -48,7 +48,7 @@ const router = new Router({
             name: 'dashboard',
             requiresAuth: true,
           },
-          component: () => import(`@/components/Dashboard.vue`),
+          component: () => import(`@/views/Dashboard.vue`),
         },
         {
           path: '/user',
@@ -56,7 +56,7 @@ const router = new Router({
             name: 'user',
             requiresAuth: true,
           },
-          component: () => import(`@/components/UserList.vue`),
+          component: () => import(`@/views/UserList.vue`),
         },
         {
           path: '/user-item/:id',
@@ -64,15 +64,15 @@ const router = new Router({
             name: 'user-item',
             requiresAuth: true,
           },
-          component: () => import(`@/components/UserItem.vue`),
+          component: () => import(`@/views/UserItem.vue`),
         },
         {
-          path: '/hello',
+          path: '/user-profile/',
           meta: {
-            name: 'hello',
+            name: 'user-profile',
             requiresAuth: true,
           },
-          component: () => import(`@/components/HelloWorld.vue`),
+          component: () => import(`@/views/UserProfile.vue`),
         },
       ],
     },

@@ -44,7 +44,7 @@ export default {
     this.$store
       .dispatch('getTableList', 'master/customer/')
       .then(response => {
-        this.entries = response
+        this.entries = response.results
       })
       .catch(error => console.log(error))
       .finally(() => (this.isLoading = false))

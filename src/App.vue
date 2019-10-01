@@ -14,12 +14,9 @@ export default {
         return response
       },
       error => {
-        if (error.response.status === 401) {
-          if (this.$store.getters.authorized) {
-            this.$store.dispatch('refreshtoken')
-          } else {
-            return Promise.reject(error)
-          }
+        if (error.response.status === 401 || error.response.status === 403) {
+          this.$store.dispatch('logout')
+          this.$router.push('/login/')
         } else {
           return Promise.reject(error)
         }

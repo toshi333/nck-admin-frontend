@@ -25,6 +25,16 @@
             >
           </v-app-bar>
           <v-card-text>
+            <v-alert
+              v-if="alert"
+              text
+              dense
+              color="error"
+              icon="mdi-alert-circle"
+              border="left"
+            >
+              {{ message }}}
+            </v-alert>
             <v-row>
               <v-col cols="12" sm="6">
                 <v-text-field label="社員番号" v-model="user.code" />
@@ -49,6 +59,12 @@
             </v-row>
           </v-card-text>
         </v-card>
+        <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
+          {{ message }}
+          <v-btn text color="white" @click="snack = false">
+            閉じる
+          </v-btn>
+        </v-snackbar>
       </v-col>
     </v-row>
   </v-container>
@@ -63,6 +79,10 @@ export default {
     teamList: {},
     isCreate: false,
     loading: false,
+    alert: false,
+    snack: false,
+    snackColor: '',
+    message: '',
   }),
 
   created() {
@@ -80,9 +100,13 @@ export default {
         .dispatch('getTableList', `${this.endpoint}${this.$route.params.id}/`)
         .then(response => {
           console.log(response)
-          this.user = response
+          this.user = response.results
         })
-        .catch(error => console.log(error))
+        .catch(error => {
+          console.log(error)
+          this.message = error
+          this.alert = true
+        })
     },
 
     updateData(endpoint, method) {
@@ -92,9 +116,14 @@ export default {
         .dispatch('updateTableItem', { endpoint, method, item })
         .then(response => {
           console.log(response)
+          this.snackColor = 'success'
+          this.message = '保存しました'
+          this.snack = true
         })
         .catch(error => {
           console.log(error)
+          this.message = error
+          this.alert = true
         })
     },
 
@@ -102,7 +131,6 @@ export default {
       if (this.user.id === 0) {
         this.updateData(this.endpoint, 'POST', this.user)
       } else {
-        console.log(this.user)
         this.updateData(`${this.endpoint}${this.user.id}/`, 'PUT')
       }
     },
@@ -110,6 +138,9 @@ export default {
     copyItem() {
       this.user.id = 0
       this.isCreate = false
+      this.snackColor = 'primary'
+      this.message = 'コピーしました'
+      this.snack = true
     },
 
     deleteItem() {

@@ -20,8 +20,10 @@ axios.defaults.headers.get['Accept'] = 'application/json'
 
 // トークンを既に持っていればヘッダー情報に追加
 const token = localStorage.getItem('token')
+console.log('token:')
+console.log(token)
 if (token) {
-  axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
+  axios.defaults.headers.common['Authorization'] = 'Token ' + token
 }
 
 // DjangoのためのCSRF対策
