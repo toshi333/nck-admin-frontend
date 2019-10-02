@@ -41,12 +41,18 @@
                 ></v-text-field>
               </v-card-title>
               <v-data-table
+                class="elevation-1"
                 :headers="headers"
                 :items="UserList"
-                :items-per-page-options="rowsAmount"
                 :search="search"
                 :loading="loading"
-                class="elevation-1"
+                :options.sync="options"
+                :server-items-length="totalCount"
+                :footer-props="{
+                  showFirstLastPage: true,
+                  showCurrentPage: true,
+                  itemsPerPageOptions: this.rowsAmount,
+                }"
               >
                 <template v-slot:item.action="{ item }">
                   <v-icon class="mr-2" @click="editItem(item)"
@@ -77,22 +83,23 @@ export default {
     snackColor: '',
     snackText: '',
     UserList: [],
-    rowsAmount: [
-      15,
-      20,
-      25,
-      { text: '$vuetify.dataIterator.rowsPerPageAll', value: -1 },
-    ],
+    totalCount: 0,
+    options: {
+      page: 1,
+      itemsPerPage: 50,
+      sortBy: ['code'],
+      sortDesc: [false],
+    },
+    rowsAmount: [25, 50, 75, 100],
     search: '',
     headers: [
       { text: '--操作--', value: 'action', sortable: false },
       { text: '社員番号', align: 'left', value: 'code' },
-      { text: '名前', value: 'username' },
-      { text: '所属', value: 'team' },
-      { text: 'email', value: 'email' },
-      { text: '管理者', value: 'is_staff' },
-      { text: '有効', value: 'is_active' },
-      { text: '最終ログイン', value: 'last_login' },
+      { text: '名前', value: 'username', sortable: false },
+      { text: '所属', value: 'team_name', sortable: false },
+      { text: 'email', value: 'email', sortable: false },
+      { text: '管理者', value: 'is_staff', sortable: false },
+      { text: '有効', value: 'is_active', sortable: false },
     ],
   }),
 
@@ -100,14 +107,27 @@ export default {
   created() {
     this.getData()
   },
-
+  watch: {
+    options: {
+      handler() {
+        this.showoption()
+      },
+      deep: true,
+    },
+  },
   methods: {
+    showoption() {
+      console.log(this.options)
+      this.getData()
+    },
+
     getData() {
       this.$store
         .dispatch('getTableItem', `/auth/user/${this.searchKey()}`)
         .then(response => {
           console.log(response)
           this.UserList = response.results
+          this.totalCount = response.count
           this.loading = false
         })
         .catch(error => console.log(error))
@@ -144,9 +164,18 @@ export default {
     },
 
     searchKey() {
-      let searchKey = `?code=${this.filterUserCode}&last_name=${this.filterUserName}`
+      let sorts = []
+      if (this.options.sortBy !== null) {
+        this.options.sortBy.forEach((value, index) => {
+          sorts.push((this.options.sortDesc[index] ? '-' : '') + value)
+        })
+      }
+      let offset = (this.options.page - 1) * this.options.itemsPerPage
+      let searchKey = `?ordering=${sorts.join(',')}&offset=${offset}&code=${
+        this.filterUserCode
+      }&last_name=${this.filterUserName}`
       if (this.filterUserTeam) {
-        searchKey = searchKey + '&team=' + this.filterUserTeam.id
+        searchKey = searchKey + '&team=' + this.filterUserTeam
       }
       return searchKey
     },
