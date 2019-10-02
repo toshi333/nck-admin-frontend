@@ -97,10 +97,10 @@ export default {
   methods: {
     getData() {
       this.$store
-        .dispatch('getTableList', `${this.endpoint}${this.$route.params.id}/`)
+        .dispatch('getTableItem', `${this.endpoint}${this.$route.params.id}/`)
         .then(response => {
           console.log(response)
-          this.user = response.results
+          this.user = response
         })
         .catch(error => {
           console.log(error)
@@ -111,7 +111,6 @@ export default {
 
     updateData(endpoint, method) {
       let item = this.user
-      console.log(item.first_name)
       this.$store
         .dispatch('updateTableItem', { endpoint, method, item })
         .then(response => {

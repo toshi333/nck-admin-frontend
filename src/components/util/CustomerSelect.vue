@@ -42,7 +42,7 @@ export default {
   created: function() {
     // Lazily load input items
     this.$store
-      .dispatch('getTableList', 'master/customer/')
+      .dispatch('getTableItem', 'master/customer/')
       .then(response => {
         this.entries = response.results
       })

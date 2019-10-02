@@ -43,28 +43,10 @@ export default {
     })
   },
   // eslint-disable-next-line no-unused-vars
-  getTableList({ commit }, endpoint) {
+  getTableItem({ commit }, endpoint) {
     return new Promise((resolve, reject) => {
       axios
         .get(endpoint)
-        .then(response => {
-          resolve(response.data)
-        })
-        .catch(err => {
-          if (err.response.status == 403) {
-            commit('logout')
-            delete axios.defaults.headers.common['Authorization']
-          }
-          reject(err)
-        })
-    })
-  },
-  // eslint-disable-next-line no-unused-vars
-  getTableItem({ commit }, endpoint, tableKey) {
-    return new Promise((resolve, reject) => {
-      let ep = endpoint + (tableKey === undefined ? '' : '/' + tableKey)
-      axios
-        .get(ep)
         .then(response => {
           resolve(response.data)
         })
@@ -85,6 +67,24 @@ export default {
         method: tableData.method,
         data: tableData.item,
       })
+        .then(response => {
+          resolve(response)
+        })
+        .catch(err => {
+          if (err.response.status == 403) {
+            commit('logout')
+            delete axios.defaults.headers.common['Authorization']
+          }
+          reject(err)
+        })
+    })
+  },
+  // eslint-disable-next-line no-unused-vars
+  updateFormItem({ commit }, tableData) {
+    const option = { 'content-type': 'multipart/form-data' }
+    return new Promise((resolve, reject) => {
+      axios
+        .patch(tableData.endpoint, tableData.item, { headers: option })
         .then(response => {
           resolve(response)
         })

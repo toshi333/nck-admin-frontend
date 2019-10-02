@@ -3,11 +3,11 @@
     <v-row justify-center wrap>
       <v-col md12>
         <v-card>
-          <v-app-bar dark color="teal darken-2">
+          <v-app-bar dark color="primary">
             <v-btn icon class="hidden-xs-only" @click="$router.push('/user/')">
               <v-icon>mdi-arrow-left-circle</v-icon>
             </v-btn>
-            <v-toolbar-title>社員</v-toolbar-title>
+            <v-toolbar-title>プロフィール</v-toolbar-title>
             <div class="flex-grow-1"></div>
             <v-btn
               class="ma-2"
@@ -16,12 +16,6 @@
               :disabled="loading"
               @click="save()"
               ><v-icon left>mdi-pencil</v-icon>保存</v-btn
-            >
-            <v-btn class="ma-2" color="info" @click="copyItem()"
-              ><v-icon left>mdi-content-copy</v-icon>コピー</v-btn
-            >
-            <v-btn class="ma-2" color="error" @click="deleteItem()">
-              <v-icon left>mdi-delete</v-icon>削除</v-btn
             >
           </v-app-bar>
           <v-card-text>
@@ -35,19 +29,26 @@
             >
               {{ message }}}
             </v-alert>
+
+            <img :src="avatarImage" height="150" @click="pickFile()" />
+
+            <input
+              type="file"
+              style="display: none"
+              ref="avatarImage"
+              accept="image/*"
+              @change="onFilePicked"
+            />
+
             <v-row>
               <v-col cols="12" sm="6">
                 <v-text-field label="社員番号" v-model="user.code" />
               </v-col>
               <v-col>
-                <UtilTeamSelect v-model="user.team" />
+                <UtilTeamSelect name="team" v-model="user.team" />
               </v-col>
               <v-col cols="12" sm="12">
-                <v-text-field
-                  label="メール"
-                  v-model="user.email"
-                  :readonly="isCreate"
-                />
+                <v-text-field label="メール" v-model="user.email" readonly />
               </v-col>
 
               <v-col cols="12" sm="6">
@@ -72,12 +73,12 @@
 
 <script>
 export default {
-  name: 'UserItem',
+  name: 'UserProfile',
   data: () => ({
     endpoint: '/auth/user/',
     user: {},
-    teamList: {},
-    isCreate: false,
+    avatarImage: '',
+    avatarFile: '',
     loading: false,
     alert: false,
     snack: false,
@@ -87,32 +88,20 @@ export default {
 
   created() {
     this.user = this.$store.getters.loginUser
+    this.avatarImage = this.user.avatar
   },
 
   methods: {
-    getData() {
-      this.$store
-        .dispatch('getTableList', `${this.endpoint}${this.$route.params.id}/`)
-        .then(response => {
-          console.log(response)
-          this.user = response.results
-        })
-        .catch(error => {
-          console.log(error)
-          this.message = error
-          this.alert = true
-        })
-    },
-
-    updateData(endpoint, method) {
-      let item = this.user
+    updateData(endpoint, method, formData) {
+      let item = formData
       console.log(item.first_name)
       this.$store
-        .dispatch('updateTableItem', { endpoint, method, item })
+        .dispatch('updateFormItem', { endpoint, method, item })
         .then(response => {
           console.log(response)
           this.snackColor = 'success'
           this.message = '保存しました'
+          this.user.avatar = this.avatarImage
           this.snack = true
         })
         .catch(error => {
@@ -123,25 +112,32 @@ export default {
     },
 
     save() {
-      if (this.user.id === 0) {
-        this.updateData(this.endpoint, 'POST', this.user)
-      } else {
-        this.updateData(`${this.endpoint}${this.user.id}/`, 'PUT')
-      }
+      let formData = new FormData()
+      formData.append('id', this.user.id)
+      formData.append('team', this.user.team)
+      formData.append('email', this.user.email)
+      formData.append('last_name', this.user.last_name)
+      formData.append('first_name', this.user.first_name)
+      if (this.avatarFile) formData.append('avatar', this.avatarFile)
+
+      this.updateData(`${this.endpoint}${this.user.id}/`, 'PATCH', formData)
     },
 
-    copyItem() {
-      this.user.id = 0
-      this.isCreate = false
-      this.snackColor = 'primary'
-      this.message = 'コピーしました'
-      this.snack = true
+    pickFile() {
+      this.$refs.avatarImage.click()
     },
-
-    deleteItem() {
-      if (confirm('このデータを削除しますか？')) {
-        this.updateData(`${this.endpoint}${this.user.id}/`, 'DELETE')
-        this.$router.push('/user/')
+    onFilePicked(e) {
+      const files = e.target.files
+      if (files[0] !== undefined) {
+        if (files[0].name.lastIndexOf('.') <= 0) {
+          return
+        }
+        const fr = new FileReader()
+        fr.readAsDataURL(files[0])
+        fr.addEventListener('load', () => {
+          this.avatarImage = fr.result
+          this.avatarFile = files[0]
+        })
       }
     },
   },

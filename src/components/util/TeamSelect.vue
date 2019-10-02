@@ -6,7 +6,6 @@
     item-text="name"
     label="所属"
     clearable
-    return-object
   ></v-select>
 </template>
 
@@ -14,7 +13,7 @@
 export default {
   props: {
     value: {
-      type: Object,
+      type: String,
       required: false,
     },
   },
@@ -33,7 +32,7 @@ export default {
   },
   created: function() {
     this.$store
-      .dispatch('getTableList', '/master/team/')
+      .dispatch('getTableItem', '/master/team/')
       .then(response => {
         this.entries = response.results
       })

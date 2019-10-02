@@ -88,7 +88,7 @@ export default {
       { text: '--操作--', value: 'action', sortable: false },
       { text: '社員番号', align: 'left', value: 'code' },
       { text: '名前', value: 'username' },
-      { text: '所属', value: 'team.name' },
+      { text: '所属', value: 'team' },
       { text: 'email', value: 'email' },
       { text: '管理者', value: 'is_staff' },
       { text: '有効', value: 'is_active' },
@@ -104,7 +104,7 @@ export default {
   methods: {
     getData() {
       this.$store
-        .dispatch('getTableList', `/auth/user/${this.searchKey()}`)
+        .dispatch('getTableItem', `/auth/user/${this.searchKey()}`)
         .then(response => {
           console.log(response)
           this.UserList = response.results
