@@ -74,6 +74,14 @@ const router = new Router({
           },
           component: () => import(`@/views/UserProfile.vue`),
         },
+        {
+          path: '/estimate/',
+          meta: {
+            name: 'estimate',
+            requiresAuth: true,
+          },
+          component: () => import(`@/views/EstimateList.vue`),
+        },
       ],
     },
   ],
