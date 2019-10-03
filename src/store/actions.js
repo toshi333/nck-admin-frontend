@@ -1,8 +1,13 @@
-// https://vuex.vuejs.org/en/actions.html
+/**
+ * データ操作系処理のまとめ
+ */
+
 import axios from 'axios'
 
-// The login action passes vuex commit helper that we will use to trigger mutations.
 export default {
+  // ログイン処理
+  // Emailとパスワードを送信
+  // ログインに成功すると、アクセスTokenとユーザー情報を返す
   login({ commit }, userData) {
     return new Promise((resolve, reject) => {
       commit('auth_request')
@@ -15,7 +20,8 @@ export default {
           const token = response.data.key
           const user = response.data.user
           axios.defaults.headers.common['Authorization'] = 'Token ' + token
-          // mutation to change state properties to the values passed along
+          // 取得したアクセスTokenとユーザー情報をStoreに保存
+          // 以降はthis.$store.gettersでアクセス出来る
           commit('auth_success', { token, user })
           resolve(response)
         })
@@ -26,6 +32,9 @@ export default {
         })
     })
   },
+
+  // ログアウト処理
+  // サーバのログアウトに成功すると、フロント側のStore情報も削除する
   logout({ commit }) {
     return new Promise((resolve, reject) => {
       commit('logout')
@@ -42,7 +51,9 @@ export default {
         })
     })
   },
-  // eslint-disable-next-line no-unused-vars
+
+  // データベース取得処理
+  // 1件取得、複数件取得共用
   getTableItem({ commit }, endpoint) {
     return new Promise((resolve, reject) => {
       axios
@@ -59,7 +70,8 @@ export default {
         })
     })
   },
-  // eslint-disable-next-line no-unused-vars
+
+  // データベース更新処理
   updateTableItem({ commit }, tableData) {
     return new Promise((resolve, reject) => {
       axios({
@@ -79,7 +91,9 @@ export default {
         })
     })
   },
-  // eslint-disable-next-line no-unused-vars
+
+  // 画像やファイルを含むフォームデータの更新処理
+  // コンテンツタイプ：multipart/form-data
   updateFormItem({ commit }, tableData) {
     const option = { 'content-type': 'multipart/form-data' }
     return new Promise((resolve, reject) => {

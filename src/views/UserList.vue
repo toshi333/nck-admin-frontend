@@ -74,6 +74,7 @@
 
 <script>
 export default {
+  name: 'UserList',
   data: () => ({
     filterUserCode: '',
     filterUserName: '',
@@ -108,19 +109,16 @@ export default {
     this.getData()
   },
   watch: {
+    // データテーブルのヘッダーを監視し、変化があったらデータを取り直す
     options: {
       handler() {
-        this.showoption()
+        this.getData()
       },
       deep: true,
     },
   },
   methods: {
-    showoption() {
-      console.log(this.options)
-      this.getData()
-    },
-
+    // APIでデータ取得
     getData() {
       this.$store
         .dispatch('getTableItem', `/auth/user/${this.searchKey()}`)
@@ -133,14 +131,17 @@ export default {
         .catch(error => console.log(error))
     },
 
+    // 編集ボタン処理
     editItem(item) {
       this.$router.push(`/user-item/${item.id}/`)
     },
 
+    // 新規登録ボタン処理
     createItem() {
       this.$router.push('/user-item/0/')
     },
 
+    // 削除処理
     deleteItem(item) {
       if (confirm(`このデータを削除しますか？：${item.username}`)) {
         let endpoint = `/auth/user/${item.id}/`
