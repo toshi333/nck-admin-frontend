@@ -6,6 +6,7 @@
           <v-app-bar dark color="teal darken-2">
             <v-toolbar-title>見積一覧</v-toolbar-title>
             <div class="flex-grow-1"></div>
+            <v-btn color="primary" @click="createItem()">新規登録</v-btn>
           </v-app-bar>
           <v-card-text>
             <v-row wrap>
@@ -19,32 +20,16 @@
                 <UtilTeamSelect v-model="filterUserTeam" />
               </v-col>
               <v-col>
-                <v-btn color="primary" @click="getData()">
-                  検索
-                </v-btn>
+                <v-btn color="primary" @click="getData()">検索</v-btn>
               </v-col>
             </v-row>
           </v-card-text>
           <v-card-text>
             <v-card>
-              <v-card-title>
-                <v-btn color="primary" @click="createItem()">
-                  新規登録
-                </v-btn>
-                <div class="flex-grow-1"></div>
-                <v-text-field
-                  v-model="search"
-                  prepend-inner-icon="mdi-magnify"
-                  label="検索"
-                  single-line
-                  hide-details
-                ></v-text-field>
-              </v-card-title>
               <v-data-table
                 class="elevation-1"
                 :headers="headers"
                 :items="UserList"
-                :search="search"
                 :loading="loading"
                 :options.sync="options"
                 :server-items-length="totalCount"
@@ -92,14 +77,12 @@ export default {
       sortDesc: [false],
     },
     rowsAmount: [25, 50, 75, 100],
-    search: '',
     headers: [
       { text: '--操作--', value: 'action', sortable: false },
       { text: '作番', value: 'project' },
       { text: '件名', value: 'name', sortable: false },
       { text: '顧客名', value: 'customer_name', sortable: false },
       { text: '見積金額', value: 'price', sortable: false },
-      { text: '見積日', value: 'date' },
       { text: '担当者', value: 'user_name', sortable: false },
     ],
   }),
@@ -121,7 +104,7 @@ export default {
     // APIでデータ取得
     getData() {
       this.$store
-        .dispatch('getTableItem', `/sales/estimate/${this.searchKey()}`)
+        .dispatch('getTableItem', `/sales/estimate-list/${this.searchKey()}`)
         .then(response => {
           console.log(response)
           this.UserList = response.results

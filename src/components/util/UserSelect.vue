@@ -3,9 +3,9 @@
     v-model="internalValue"
     :items="items"
     :loading="isLoading"
-    item-text="name"
+    item-text="username"
     item-value="id"
-    label="顧客名"
+    label="ユーザー名"
     return-object
   />
 </template>
@@ -41,7 +41,7 @@ export default {
   created: function() {
     // Lazily load input items
     this.$store
-      .dispatch('getTableItem', 'master/customer/')
+      .dispatch('getTableItem', 'auth/user/')
       .then(response => {
         this.entries = response.results
       })

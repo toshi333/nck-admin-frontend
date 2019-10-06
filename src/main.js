@@ -11,6 +11,7 @@ import router from '@/router'
 import store from '@/store/store'
 import vuetify from './plugins/vuetify'
 import axios from 'axios'
+import 'handsontable/dist/handsontable.full.css'
 
 // axiosのデフォルト設定
 Vue.prototype.$http = axios
