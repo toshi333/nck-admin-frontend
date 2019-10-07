@@ -65,8 +65,7 @@
           </v-card-text>
           <v-card-text>
             <div class="subheading">製品</div>
-            {{ db_data.tasks }}
-            <EstimateItemTaskHotTable :data="db_data.tasks" />
+            <EstimateItemTaskHotTableCopy :data="tasks" />
           </v-card-text>
         </v-card>
         <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
@@ -84,8 +83,7 @@ export default {
   data: () => ({
     endpoint: '/sales/estimate/',
     db_data: {},
-    teamList: {},
-    isCreate: false,
+    tasks: {},
     loading: false,
     alert: false,
     snack: false,
@@ -97,7 +95,6 @@ export default {
     if (this.$route.params.id === '0') {
       this.db_data.id = 0
     } else {
-      this.isCreate = true
       this.getData()
     }
   },
@@ -109,6 +106,7 @@ export default {
         .then(response => {
           console.log(response)
           this.db_data = response
+          this.tasks = this.deleteEmptyRow(this.db_data.tasks)
         })
         .catch(error => {
           console.log(error)
@@ -119,7 +117,8 @@ export default {
 
     updateData(endpoint, method) {
       let item = this.db_data
-      item.tasks = this.deleteEmptyRow(item.tasks)
+      item.tasks = this.deleteEmptyRow(this.tasks)
+
       this.$store
         .dispatch('updateTableItem', { endpoint, method, item })
         .then(response => {
@@ -145,7 +144,6 @@ export default {
 
     copyItem() {
       this.db_data.id = 0
-      this.isCreate = false
       this.snackColor = 'primary'
       this.message = 'コピーしました'
       this.snack = true
@@ -161,11 +159,10 @@ export default {
     // 更新処理の前にグリッドの空白行を除去する
     deleteEmptyRow(data) {
       return data.filter(row => {
-        let isNul = false
         for (let col in row) {
-          if (row[col] !== null) isNul = true
+          if (row[col]) return true
         }
-        return isNul
+        return false
       })
     },
   },

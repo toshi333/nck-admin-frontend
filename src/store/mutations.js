@@ -16,4 +16,7 @@ export default {
     state.authStatus = ''
     state.token = ''
   },
+  user_list(state, { userlist }) {
+    state.userlist = userlist
+  },
 }

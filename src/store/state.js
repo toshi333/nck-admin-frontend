@@ -4,4 +4,5 @@ export default {
   authStatus: '',
   token: '',
   user: {},
+  userlist: [],
 }

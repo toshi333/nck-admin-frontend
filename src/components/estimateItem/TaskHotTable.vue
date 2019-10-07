@@ -5,12 +5,13 @@
       :data="data"
       :settings="hotSettings"
       ref="estimateTaskGrid"
-    ></hot-table>
+    />
   </div>
 </template>
 
 <script>
 import { HotTable } from '@handsontable/vue'
+import 'handsontable-key-value'
 export default {
   name: 'EstimateTaskHotTable',
   props: ['data'],
@@ -20,13 +21,29 @@ export default {
   data() {
     return {
       root: 'testhot',
-      userList: {},
+      userList: [
+        { id: 'bc7b7561-d40c-4104-9b84-5f6a775545e5', username: 'ほげやま' },
+      ],
       hotSettings: {
         data: this.data,
         colHeaders: ['タスク', '担当者', '工数', 'メモ'],
+        dataSchema: {
+          id: null,
+          name: null,
+          user: null,
+          time: null,
+          memo: null,
+        },
         columns: [
           { data: 'name', type: 'text' },
-          { data: 'user', type: 'dropdown', source: this.userList },
+          {
+            type: 'key-value',
+            data: 'user',
+            filter: false,
+            source: this.userList,
+            keyProperty: 'id',
+            valueProperty: 'username',
+          },
           {
             data: 'time',
             type: 'numeric',
@@ -45,6 +62,16 @@ export default {
         rowHeaders: true,
       },
     }
+  },
+  created: function() {
+    // Lazily load input items
+    this.$store
+      .dispatch('getTableItem', 'auth/user/')
+      .then(response => {
+        this.userList = response.results
+        console.log(this.userList)
+      })
+      .catch(error => console.log(error))
   },
   methods: {},
 }
