@@ -1,17 +1,14 @@
 <template>
   <div>
-    タスク
-    <div class="flex-grow-1"></div>
-    <v-btn class="ma-2" small color="info" @click="copyItem()">
-      <v-icon left>mdi-playlist-plus</v-icon>行追加
-    </v-btn>
-    <hot-table
-      :root="root"
-      :data="data"
-      :settings="hotSettings"
-      ref="estimateTaskGrid"
-    />
-    {{ data }}
+    <div class="d-flex">
+      <div class="align-self-end">タスク</div>
+      <div class="ml-auto">
+        <v-btn class="ma-2" small color="info" @click="addrow()">
+          <v-icon left>mdi-playlist-plus</v-icon>行追加
+        </v-btn>
+      </div>
+    </div>
+    <hot-table :root="root" :data="data" :settings="hotSettings" ref="hottbl" />
   </div>
 </template>
 
@@ -87,7 +84,11 @@ export default {
       })
       .catch(error => console.log(error))
   },
-  methods: {},
+  methods: {
+    addrow() {
+      this.$refs.hottbl.hotInstance.alter('insert_row', this.data.length + 1)
+    },
+  },
   watch: {
     data: function(newdata) {
       newdata.forEach((item, key) => {

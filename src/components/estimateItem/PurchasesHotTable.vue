@@ -1,5 +1,13 @@
 <template>
   <div>
+    <div class="d-flex">
+      <div class="align-self-end">購入</div>
+      <div class="ml-auto">
+        <v-btn class="ma-2" small color="info" @click="copyItem()">
+          <v-icon left>mdi-playlist-plus</v-icon>行追加
+        </v-btn>
+      </div>
+    </div>
     <hot-table
       :root="root"
       :data="data"

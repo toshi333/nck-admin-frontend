@@ -64,7 +64,6 @@
             </v-row>
           </v-card-text>
           <v-card-text>
-            <div class="subheading">購入</div>
             <EstimateItemPurchasesHotTable :data="purchases" />
           </v-card-text>
           <v-card-text>
