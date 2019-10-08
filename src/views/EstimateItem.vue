@@ -64,8 +64,11 @@
             </v-row>
           </v-card-text>
           <v-card-text>
-            <div class="subheading">製品</div>
-            <EstimateItemTaskHotTableCopy :data="tasks" />
+            <div class="subheading">購入</div>
+            <EstimateItemPurchasesHotTable :data="purchases" />
+          </v-card-text>
+          <v-card-text>
+            <EstimateItemTaskHotTable :data="tasks" />
           </v-card-text>
         </v-card>
         <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
@@ -83,6 +86,7 @@ export default {
   data: () => ({
     endpoint: '/sales/estimate/',
     db_data: {},
+    purchases: {},
     tasks: {},
     loading: false,
     alert: false,
@@ -107,6 +111,7 @@ export default {
           console.log(response)
           this.db_data = response
           this.tasks = this.deleteEmptyRow(this.db_data.tasks)
+          this.purchases = this.deleteEmptyRow(this.db_data.purchases)
         })
         .catch(error => {
           console.log(error)
@@ -118,6 +123,7 @@ export default {
     updateData(endpoint, method) {
       let item = this.db_data
       item.tasks = this.deleteEmptyRow(this.tasks)
+      item.purchases = this.deleteEmptyRow(this.purchases)
 
       this.$store
         .dispatch('updateTableItem', { endpoint, method, item })
