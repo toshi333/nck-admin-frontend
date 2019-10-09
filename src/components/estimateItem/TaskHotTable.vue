@@ -9,7 +9,6 @@
       </div>
     </div>
     <hot-table :root="root" :data="data" :settings="hotSettings" ref="hottbl" />
-    {{ data }}
   </div>
 </template>
 
@@ -32,17 +31,9 @@ export default {
       root: 'testhot',
       hotSettings: Object.assign(ht.settings(), {
         data: this.data,
-        colHeaders: [
-          '',
-          'タスク',
-          '見積金額',
-          '原価',
-          '利益率',
-          '工数',
-          'メモ',
-        ],
+        colHeaders: ['タスク', '見積金額', '原価', '利益率', '工数', 'メモ'],
+        colWidths: [300, 100, 100, 70, 70],
         dataSchema: {
-          row_num: 0,
           name: null,
           estimate_price: 0,
           cost: 0,
@@ -50,18 +41,7 @@ export default {
           time: 0,
           memo: null,
         },
-        /*
-        hiddenColumns: {
-          copyPasteEnabled: false,
-          indicators: false,
-          columns: [0],
-        },*/
-        colWidths: [0, 300, 100, 100, 70, 70],
         columns: [
-          {
-            data: 'row_num',
-            type: 'numeric',
-          },
           { data: 'name', type: 'text' },
           {
             data: 'estimate_price',
@@ -87,18 +67,17 @@ export default {
           },
           { data: 'memo', type: 'text' },
         ],
-        afterChange: (changes, source) => {
-          console.log(source)
+        afterChange: () => {
           this.tableChange()
         },
+        /*
         afterRowMove: () => {
           var rows = this.$refs.hottbl.hotInstance.countRows()
           for (var i = 0; i < rows; i++) {
             this.$refs.hottbl.hotInstance.setDataAtRowProp(i, 'row_num', i)
-            console.log(this.$refs.hottbl.hotInstance.getDataAtRow(i))
           }
-          console.log(this.$refs.hottbl.hotInstance.getData())
         },
+        */
       }),
     }
   },
@@ -107,7 +86,6 @@ export default {
       this.$refs.hottbl.hotInstance.alter('insert_row', this.data.length + 1)
     },
     tableChange() {
-      console.log('change')
       this.data.forEach((row, key) => {
         row.row_num = key
         row.cost = row.time * 3500
@@ -117,11 +95,6 @@ export default {
       })
       this.$refs.hottbl.hotInstance.render()
     },
-  },
-  mounted() {
-    this.$nextTick(function() {
-      this.tableChange()
-    })
   },
 }
 </script>

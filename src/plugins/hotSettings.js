@@ -9,7 +9,7 @@ export default {
       stretchH: 'last',
       manualColumnResize: true,
       rowHeaders: true,
-      manualRowMove: true,
+      //manualRowMove: true,
       undo: true,
       redo: true,
       contextMenu: {

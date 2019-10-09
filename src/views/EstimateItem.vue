@@ -19,6 +19,8 @@
               :loading="loading"
               :disabled="loading"
               @click="save()"
+              v-shortkey="['ctrl', 's']"
+              @shortkey="save()"
             >
               <v-icon left>mdi-pencil</v-icon>保存
             </v-btn>
@@ -29,6 +31,48 @@
               <v-icon left>mdi-delete</v-icon>削除
             </v-btn>
           </v-app-bar>
+          <v-card-text>
+            <v-stepper v-model="db_data.status">
+              <v-stepper-header>
+                <v-stepper-step
+                  :complete="db_data.status > 1 && db_data.status != 9"
+                  step="1"
+                  editable
+                  >下書き</v-stepper-step
+                >
+                <v-divider></v-divider>
+                <v-stepper-step
+                  :complete="db_data.status > 2 && db_data.status != 9"
+                  step="2"
+                  editable
+                  >申請中</v-stepper-step
+                >
+                <v-divider></v-divider>
+                <v-stepper-step
+                  :complete="db_data.status > 3 && db_data.status != 9"
+                  step="3"
+                  editable
+                  :rules="[() => db_data.status != 3]"
+                  >差戻し</v-stepper-step
+                >
+                <v-divider></v-divider>
+                <v-stepper-step
+                  :complete="db_data.status > 4 && db_data.status != 9"
+                  step="4"
+                  color="success"
+                  editable
+                  >承認済</v-stepper-step
+                >
+                <v-divider></v-divider>
+                <v-stepper-step
+                  step="9"
+                  editable
+                  :rules="[() => db_data.status != 9]"
+                  >キャンセル</v-stepper-step
+                >
+              </v-stepper-header>
+            </v-stepper>
+          </v-card-text>
           <v-card-text>
             <v-alert
               v-if="alert"
@@ -59,14 +103,17 @@
                 <UtilUserSelect v-model="db_data.user" />
               </v-col>
               <v-col cols="12" sm="12">
-                <v-text-field label="説明" v-model="db_data.description" />
+                <v-textarea
+                  label="説明"
+                  v-model="db_data.description"
+                  auto-grow
+                  rows="3"
+                />
               </v-col>
             </v-row>
           </v-card-text>
           <v-card-text>
-            <!--
-            <EstimateItemPurchasesHotTabl :data="db_data.purchases" />
-            -->
+            <EstimateItemPurchasesHotTable :data="db_data.purchases" />
           </v-card-text>
           <v-card-text>
             <EstimateItemTaskHotTable :data="db_data.tasks" />
@@ -118,6 +165,7 @@ export default {
     },
 
     updateData(endpoint, method) {
+      this.alert = false
       let item = this.db_data
       item.tasks = this.deleteEmptyRow(item.tasks)
       item.purchases = this.deleteEmptyRow(item.purchases)

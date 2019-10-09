@@ -3,32 +3,33 @@
     <div class="d-flex">
       <div class="align-self-end">購入</div>
       <div class="ml-auto">
-        <v-btn class="ma-2" small color="info" @click="copyItem()">
+        <v-btn class="ma-2" small color="info" @click="addrow()">
           <v-icon left>mdi-playlist-plus</v-icon>行追加
         </v-btn>
       </div>
     </div>
-    <hot-table
-      :root="root"
-      :data="data"
-      :settings="hotSettings"
-      ref="estimatePurchaseGrid"
-    />
+    <hot-table :root="root" :data="data" :settings="hotSettings" ref="hottbl" />
   </div>
 </template>
 
 <script>
 import { HotTable } from '@handsontable/vue'
+import ht from '@/plugins/hotSettings.js'
 export default {
   name: 'PurchaseHotTable',
-  props: ['data'],
+  props: {
+    data: {
+      type: Array,
+      require: false,
+    },
+  },
   components: {
     HotTable,
   },
   data() {
     return {
       root: 'testhot',
-      hotSettings: {
+      hotSettings: Object.assign(ht.settings(), {
         data: this.data,
         colHeaders: [
           '品名',
@@ -37,9 +38,10 @@ export default {
           '見積単価',
           '仕入金額',
           '見積金額',
-          '利益',
+          '利益率',
           'メモ',
         ],
+        colWidths: [300, 70, 100, 100, 100, 100, 70],
         dataSchema: {
           name: null,
           quantity: 0,
@@ -82,32 +84,31 @@ export default {
           {
             data: 'profit',
             type: 'numeric',
-            numericFormat: { pattern: '0,0' },
+            numericFormat: { pattern: '0.0%' },
             readOnly: true,
           },
           { data: 'memo', type: 'text' },
         ],
-        autoColumnSize: true,
-        enterBeginsEditing: false,
-        rowHeights: 30,
-        //minSpareRows: 1,
-        minRows: 3,
-        stretchH: 'all',
-        contextMenu: true,
-        manualColumnResize: true,
-        rowHeaders: true,
-        formulas: true,
-      },
+        afterChange: () => {
+          this.tableChange()
+        },
+      }),
     }
   },
-  watch: {
-    data: function(newdata) {
-      newdata.forEach((item, key) => {
-        let index = key + 1
-        item.purchase_amount = '=B' + index + '*C' + index
-        item.estimate_amount = '=B' + index + '*D' + index
-        item.profit = '=F' + index + '-E' + index
+  methods: {
+    addrow() {
+      this.$refs.hottbl.hotInstance.alter('insert_row', this.data.length + 1)
+    },
+    tableChange() {
+      this.data.forEach((row, key) => {
+        row.row_num = key
+        row.purchase_amount = row.purchase_price * row.quantity
+        row.estimate_amount = row.estimate_price * row.quantity
+        row.profit = row.estimate_amount
+          ? (row.estimate_amount - row.purchase_amount) / row.estimate_amount
+          : 0
       })
+      this.$refs.hottbl.hotInstance.render()
     },
   },
 }

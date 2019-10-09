@@ -33,6 +33,9 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 // VuexとVue-Routerを連動させる
 sync(store, router)
 
+// キーボードショートカットプラグイン
+Vue.use(require('vue-shortkey'))
+
 // 製品モードか開発モードか
 Vue.config.productionTip = false
 
