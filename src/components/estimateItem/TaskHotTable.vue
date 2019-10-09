@@ -9,24 +9,40 @@
       </div>
     </div>
     <hot-table :root="root" :data="data" :settings="hotSettings" ref="hottbl" />
+    {{ data }}
   </div>
 </template>
 
 <script>
 import { HotTable } from '@handsontable/vue'
+import ht from '@/plugins/hotSettings.js'
 export default {
   name: 'EstimateTaskHotTable',
-  props: ['data'],
+  props: {
+    data: {
+      type: Array,
+      require: false,
+    },
+  },
   components: {
     HotTable,
   },
   data() {
     return {
       root: 'testhot',
-      hotSettings: {
+      hotSettings: Object.assign(ht.settings(), {
         data: this.data,
-        colHeaders: ['タスク', '見積金額', '原価', '利益率', '工数', 'メモ'],
+        colHeaders: [
+          '',
+          'タスク',
+          '見積金額',
+          '原価',
+          '利益率',
+          '工数',
+          'メモ',
+        ],
         dataSchema: {
+          row_num: 0,
           name: null,
           estimate_price: 0,
           cost: 0,
@@ -34,7 +50,18 @@ export default {
           time: 0,
           memo: null,
         },
+        /*
+        hiddenColumns: {
+          copyPasteEnabled: false,
+          indicators: false,
+          columns: [0],
+        },*/
+        colWidths: [0, 300, 100, 100, 70, 70],
         columns: [
+          {
+            data: 'row_num',
+            type: 'numeric',
+          },
           { data: 'name', type: 'text' },
           {
             data: 'estimate_price',
@@ -50,7 +77,6 @@ export default {
           {
             data: 'profit',
             type: 'numeric',
-            width: 100,
             numericFormat: { pattern: '0.0%' },
             readOnly: true,
           },
@@ -61,43 +87,41 @@ export default {
           },
           { data: 'memo', type: 'text' },
         ],
-        autoColumnSize: true,
-        enterBeginsEditing: false,
-        rowHeights: 30,
-        minRows: 5,
-        stretchH: 'all',
-        contextMenu: true,
-        manualColumnResize: true,
-        rowHeaders: true,
-        manualRowMove: true,
-        formulas: true,
-      },
+        afterChange: (changes, source) => {
+          console.log(source)
+          this.tableChange()
+        },
+        afterRowMove: () => {
+          var rows = this.$refs.hottbl.hotInstance.countRows()
+          for (var i = 0; i < rows; i++) {
+            this.$refs.hottbl.hotInstance.setDataAtRowProp(i, 'row_num', i)
+            console.log(this.$refs.hottbl.hotInstance.getDataAtRow(i))
+          }
+          console.log(this.$refs.hottbl.hotInstance.getData())
+        },
+      }),
     }
-  },
-  created: function() {
-    // Lazily load input items
-    this.$store
-      .dispatch('getTableItem', 'auth/user/')
-      .then(response => {
-        this.userList = response.results
-        console.log(this.userList)
-      })
-      .catch(error => console.log(error))
   },
   methods: {
     addrow() {
       this.$refs.hottbl.hotInstance.alter('insert_row', this.data.length + 1)
     },
-  },
-  watch: {
-    data: function(newdata) {
-      newdata.forEach((item, key) => {
-        let index = key + 1
-        item.row_num = index
-        item.cost = '=E' + index + '*3500'
-        item.profit = '=(B' + index + '-C' + index + ')/' + 'B' + index
+    tableChange() {
+      console.log('change')
+      this.data.forEach((row, key) => {
+        row.row_num = key
+        row.cost = row.time * 3500
+        row.profit = row.estimate_price
+          ? (row.estimate_price - row.cost) / row.estimate_price
+          : 0
       })
+      this.$refs.hottbl.hotInstance.render()
     },
+  },
+  mounted() {
+    this.$nextTick(function() {
+      this.tableChange()
+    })
   },
 }
 </script>

@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row justify-center wrap>
       <v-col md12>
-        <v-card>
+        <v-card v-if="db_data">
           <v-app-bar dark color="teal darken-2">
             <v-btn
               icon
@@ -64,10 +64,12 @@
             </v-row>
           </v-card-text>
           <v-card-text>
-            <EstimateItemPurchasesHotTable :data="purchases" />
+            <!--
+            <EstimateItemPurchasesHotTabl :data="db_data.purchases" />
+            -->
           </v-card-text>
           <v-card-text>
-            <EstimateItemTaskHotTable :data="tasks" />
+            <EstimateItemTaskHotTable :data="db_data.tasks" />
           </v-card-text>
         </v-card>
         <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
@@ -84,9 +86,7 @@ export default {
   name: 'EstimateItem',
   data: () => ({
     endpoint: '/sales/estimate/',
-    db_data: {},
-    purchases: {},
-    tasks: {},
+    db_data: null,
     loading: false,
     alert: false,
     snack: false,
@@ -109,8 +109,6 @@ export default {
         .then(response => {
           console.log(response)
           this.db_data = response
-          this.tasks = this.deleteEmptyRow(this.db_data.tasks)
-          this.purchases = this.deleteEmptyRow(this.db_data.purchases)
         })
         .catch(error => {
           console.log(error)
@@ -121,8 +119,8 @@ export default {
 
     updateData(endpoint, method) {
       let item = this.db_data
-      item.tasks = this.deleteEmptyRow(this.tasks)
-      item.purchases = this.deleteEmptyRow(this.purchases)
+      item.tasks = this.deleteEmptyRow(item.tasks)
+      item.purchases = this.deleteEmptyRow(item.purchases)
 
       this.$store
         .dispatch('updateTableItem', { endpoint, method, item })
