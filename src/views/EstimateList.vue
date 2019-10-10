@@ -3,10 +3,12 @@
     <v-row justify-center wrap>
       <v-col md12>
         <v-card>
-          <v-app-bar dark color="teal darken-2">
+          <v-app-bar dark color="blue-grey darken-2">
             <v-toolbar-title>見積一覧</v-toolbar-title>
             <div class="flex-grow-1"></div>
-            <v-btn color="primary" @click="createItem()">新規登録</v-btn>
+            <v-btn class="ma-2" color="primary" @click="createItem()">
+              <v-icon left>mdi-plus-box-outline</v-icon>登録
+            </v-btn>
           </v-app-bar>
           <v-card-text>
             <v-row wrap>
@@ -20,7 +22,9 @@
                 <UtilTeamSelect v-model="filterUserTeam" />
               </v-col>
               <v-col>
-                <v-btn color="primary" @click="getData()">検索</v-btn>
+                <v-btn class="ma-2" color="primary" @click="getData()">
+                  <v-icon left>mdi-magnify</v-icon>検索
+                </v-btn>
               </v-col>
             </v-row>
           </v-card-text>
@@ -46,9 +50,9 @@
                   <v-icon @click="deleteItem(item)">mdi-delete</v-icon>
                 </template>
               </v-data-table>
-              <v-snackbar v-model="snack" :timeout="2500" :color="snackColor">
-                {{ snackText }}
-              </v-snackbar>
+              <v-snackbar v-model="snack" :timeout="2500" :color="snackColor">{{
+                snackText
+              }}</v-snackbar>
             </v-card>
           </v-card-text>
         </v-card>

@@ -1,9 +1,9 @@
 <template>
   <v-container fluid>
     <v-row justify-center wrap>
-      <v-col md12>
-        <v-card v-if="db_data">
-          <v-app-bar dark color="teal darken-2">
+      <v-col cols="12" sm="9">
+        <v-card class="elevation-3">
+          <v-app-bar dark color="blue-grey darken-2">
             <v-btn
               icon
               class="hidden-xs-only"
@@ -31,7 +31,7 @@
               <v-icon left>mdi-delete</v-icon>削除
             </v-btn>
           </v-app-bar>
-          <v-card-text>
+          <v-card-text v-if="db_data">
             <v-alert
               v-if="alert"
               text
@@ -81,6 +81,9 @@
                       :rules="[() => db_data.status != 9]"
                       >キャンセル</v-stepper-step
                     >
+                    <v-btn class="ma-2" color="warning" @click="save()">
+                      <v-icon left>mdi-clipboard-arrow-up-outline</v-icon>申請
+                    </v-btn>
                   </v-stepper-header>
                 </v-stepper>
               </v-col>
@@ -100,45 +103,35 @@
                 <v-card>
                   <v-card-text>
                     <v-row>
-                      <v-col class="display-1 pl-24">
-                        見積金額：
-                      </v-col>
-                      <v-col class="display-1 text-end">
-                        ￥{{ total_amount | numeral('0,0') }}
-                      </v-col>
+                      <v-col class="headline pl-24">見積金額：</v-col>
+                      <v-col class="display-1 text-end"
+                        >￥{{ total_amount | numeral('0,0') }}</v-col
+                      >
                     </v-row>
                     <v-divider />
                     <v-row>
-                      <v-col class="title  pl-24">
-                        購入原価：
-                      </v-col>
-                      <v-col class="title text-end">
-                        ￥{{ pur_cost_total | numeral('0,0') }}
-                      </v-col>
+                      <v-col class="title pl-8">購入原価：</v-col>
+                      <v-col class="title text-end"
+                        >￥{{ pur_cost_total | numeral('0,0') }}</v-col
+                      >
                     </v-row>
                     <v-divider inset />
                     <v-row>
-                      <v-col class="title  pl-24">
-                        作業原価：
-                      </v-col>
-                      <v-col class="title text-end">
-                        ￥{{ tsk_cost_total | numeral('0,0') }}
-                      </v-col>
+                      <v-col class="title pl-8">作業原価：</v-col>
+                      <v-col class="title text-end"
+                        >￥{{ tsk_cost_total | numeral('0,0') }}</v-col
+                      >
                     </v-row>
                     <v-divider inset />
                     <v-row>
-                      <v-col class="title pl-24">
-                        経費：
-                      </v-col>
-                      <v-col class="title text-end">
-                        ￥{{ 0 | numeral('0,0') }}
-                      </v-col>
+                      <v-col class="title pl-8">経費：</v-col>
+                      <v-col class="title text-end"
+                        >￥{{ 0 | numeral('0,0') }}</v-col
+                      >
                     </v-row>
                     <v-divider inset />
                     <v-row>
-                      <v-col class="title pl-24">
-                        利益率：
-                      </v-col>
+                      <v-col class="title pl-8">利益率：</v-col>
                       <v-col class="title text-end">
                         {{ total_profit | numeral('0.[00]%') }}
                       </v-col>
@@ -155,25 +148,29 @@
                   rows="3"
                 />
               </v-col>
+
+              <v-col class="px-4" cols="12" sm="12">
+                <EstimateItemPurchasesHotTable
+                  :data="db_data.purchases"
+                  @purchases-sum="onPurchasesSum"
+                />
+              </v-col>
+              <v-col class="px-4" cols="12" sm="12">
+                <EstimateItemTaskHotTable
+                  :data="db_data.tasks"
+                  @tasks-sum="onTasksSum"
+                />
+              </v-col>
             </v-row>
-          </v-card-text>
-          <v-card-text>
-            <EstimateItemPurchasesHotTable
-              :data="db_data.purchases"
-              @purchases-sum="onPurchasesSum"
-            />
-          </v-card-text>
-          <v-card-text>
-            <EstimateItemTaskHotTable
-              :data="db_data.tasks"
-              @tasks-sum="onTasksSum"
-            />
           </v-card-text>
         </v-card>
         <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
           {{ message }}
           <v-btn text color="white" @click="snack = false">閉じる</v-btn>
         </v-snackbar>
+      </v-col>
+      <v-col class="pl-0" cols="12" sm="3">
+        <UtilComment />
       </v-col>
     </v-row>
   </v-container>

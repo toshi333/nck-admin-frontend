@@ -42,7 +42,7 @@ export default {
         colWidths: [300, 100, 100, 70, 70],
         dataSchema: {
           name: null,
-          estimate_amount: 0,
+          estimate_price: 0,
           cost: 0,
           profit: 0,
           time: 0,
@@ -51,7 +51,7 @@ export default {
         columns: [
           { data: 'name', type: 'text' },
           {
-            data: 'estimate_amount',
+            data: 'estimate_price',
             type: 'numeric',
             numericFormat: { pattern: '0,0' },
           },
@@ -97,11 +97,11 @@ export default {
       let tsk_cost_total = 0
       this.data.forEach(function(row, key) {
         row.row_num = key
-        tsk_est_total += row.estimate_amount ? row.estimate_amount : 0
+        tsk_est_total += row.estimate_price ? row.estimate_price : 0
         row.cost = row.time * 3500
         tsk_cost_total += row.cost ? row.cost : 0
-        row.profit = row.estimate_amount
-          ? (row.estimate_amount - row.cost) / row.estimate_amount
+        row.profit = row.estimate_price
+          ? (row.estimate_price - row.cost) / row.estimate_price
           : 0
       })
       this.$refs.hottbl.hotInstance.render()
