@@ -34,10 +34,10 @@ export default {
         colHeaders: [
           '品名',
           '数量',
-          '仕入単価',
           '見積単価',
-          '仕入金額',
           '見積金額',
+          '仕入単価',
+          '仕入原価',
           '利益率',
           'メモ',
         ],
@@ -45,10 +45,12 @@ export default {
         dataSchema: {
           name: null,
           quantity: 0,
-          purchase_price: 0,
           estimate_price: 0,
-          purchase_amount: 0,
           estimate_amount: 0,
+          purchase_price: 0,
+
+          purchase_amount: 0,
+
           profit: 0,
           memo: null,
         },
@@ -59,13 +61,20 @@ export default {
             type: 'numeric',
             numericFormat: { pattern: '0,0' },
           },
+
           {
-            data: 'purchase_price',
+            data: 'estimate_price',
             type: 'numeric',
             numericFormat: { pattern: '0,0' },
           },
           {
-            data: 'estimate_price',
+            data: 'estimate_amount',
+            type: 'numeric',
+            numericFormat: { pattern: '0,0' },
+            readOnly: true,
+          },
+          {
+            data: 'purchase_price',
             type: 'numeric',
             numericFormat: { pattern: '0,0' },
           },
@@ -75,12 +84,7 @@ export default {
             numericFormat: { pattern: '0,0' },
             readOnly: true,
           },
-          {
-            data: 'estimate_amount',
-            type: 'numeric',
-            numericFormat: { pattern: '0,0' },
-            readOnly: true,
-          },
+
           {
             data: 'profit',
             type: 'numeric',
@@ -100,15 +104,20 @@ export default {
       this.$refs.hottbl.hotInstance.alter('insert_row', this.data.length + 1)
     },
     tableChange() {
+      let pur_est_total = 0
+      let pur_cost_total = 0
       this.data.forEach((row, key) => {
         row.row_num = key
         row.purchase_amount = row.purchase_price * row.quantity
         row.estimate_amount = row.estimate_price * row.quantity
+        pur_est_total += row.estimate_amount ? row.estimate_amount : 0
+        pur_cost_total += row.purchase_amount ? row.purchase_amount : 0
         row.profit = row.estimate_amount
           ? (row.estimate_amount - row.purchase_amount) / row.estimate_amount
           : 0
       })
       this.$refs.hottbl.hotInstance.render()
+      this.$emit('purchases-sum', pur_est_total, pur_cost_total)
     },
   },
 }

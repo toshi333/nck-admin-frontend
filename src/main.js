@@ -12,6 +12,7 @@ import store from '@/store/store'
 import vuetify from './plugins/vuetify'
 import axios from 'axios'
 import 'handsontable/dist/handsontable.full.css'
+import vueNumeralFilterInstaller from 'vue-numeral-filter'
 
 // axiosのデフォルト設定
 Vue.prototype.$http = axios
@@ -35,6 +36,9 @@ sync(store, router)
 
 // キーボードショートカットプラグイン
 Vue.use(require('vue-shortkey'))
+
+// 数値フォーマットライブラリ
+Vue.use(vueNumeralFilterInstaller)
 
 // 製品モードか開発モードか
 Vue.config.productionTip = false

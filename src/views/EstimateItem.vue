@@ -32,48 +32,6 @@
             </v-btn>
           </v-app-bar>
           <v-card-text>
-            <v-stepper v-model="db_data.status">
-              <v-stepper-header>
-                <v-stepper-step
-                  :complete="db_data.status > 1 && db_data.status != 9"
-                  step="1"
-                  editable
-                  >下書き</v-stepper-step
-                >
-                <v-divider></v-divider>
-                <v-stepper-step
-                  :complete="db_data.status > 2 && db_data.status != 9"
-                  step="2"
-                  editable
-                  >申請中</v-stepper-step
-                >
-                <v-divider></v-divider>
-                <v-stepper-step
-                  :complete="db_data.status > 3 && db_data.status != 9"
-                  step="3"
-                  editable
-                  :rules="[() => db_data.status != 3]"
-                  >差戻し</v-stepper-step
-                >
-                <v-divider></v-divider>
-                <v-stepper-step
-                  :complete="db_data.status > 4 && db_data.status != 9"
-                  step="4"
-                  color="success"
-                  editable
-                  >承認済</v-stepper-step
-                >
-                <v-divider></v-divider>
-                <v-stepper-step
-                  step="9"
-                  editable
-                  :rules="[() => db_data.status != 9]"
-                  >キャンセル</v-stepper-step
-                >
-              </v-stepper-header>
-            </v-stepper>
-          </v-card-text>
-          <v-card-text>
             <v-alert
               v-if="alert"
               text
@@ -84,25 +42,112 @@
               >{{ message }}}</v-alert
             >
             <v-row>
-              <v-col cols="12" sm="6">
+              <v-col cols="12" sm="12">
+                <v-stepper v-model="db_data.status">
+                  <v-stepper-header>
+                    <v-stepper-step
+                      :complete="db_data.status > 1 && db_data.status != 9"
+                      step="1"
+                      editable
+                      >下書き</v-stepper-step
+                    >
+                    <v-divider></v-divider>
+                    <v-stepper-step
+                      :complete="db_data.status > 2 && db_data.status != 9"
+                      step="2"
+                      editable
+                      >申請中</v-stepper-step
+                    >
+                    <v-divider></v-divider>
+                    <v-stepper-step
+                      :complete="db_data.status > 3 && db_data.status != 9"
+                      step="3"
+                      editable
+                      :rules="[() => db_data.status != 3]"
+                      >差戻し</v-stepper-step
+                    >
+                    <v-divider></v-divider>
+                    <v-stepper-step
+                      :complete="db_data.status > 4 && db_data.status != 9"
+                      step="4"
+                      color="success"
+                      editable
+                      >承認済</v-stepper-step
+                    >
+                    <v-divider></v-divider>
+                    <v-stepper-step
+                      step="9"
+                      editable
+                      :rules="[() => db_data.status != 9]"
+                      >キャンセル</v-stepper-step
+                    >
+                  </v-stepper-header>
+                </v-stepper>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="px-4" cols="12" sm="6">
                 <v-text-field
                   label="プロジェクトコード"
                   v-model="db_data.project"
                 />
-              </v-col>
-              <v-col cols="12" sm="6">
                 <UtilCustomerSelect v-model="db_data.customer" />
-              </v-col>
-              <v-col cols="12" sm="6">
                 <v-text-field label="件名" v-model="db_data.name" />
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field label="見積金額" v-model="db_data.price" />
-              </v-col>
-              <v-col cols="12" sm="6">
+                <UtilTeamSelect v-model="db_data.user" />
                 <UtilUserSelect v-model="db_data.user" />
               </v-col>
-              <v-col cols="12" sm="12">
+              <v-col cols="12" sm="6">
+                <v-card>
+                  <v-card-text>
+                    <v-row>
+                      <v-col class="display-1 pl-24">
+                        見積金額：
+                      </v-col>
+                      <v-col class="display-1 text-end">
+                        ￥{{ total_amount | numeral('0,0') }}
+                      </v-col>
+                    </v-row>
+                    <v-divider />
+                    <v-row>
+                      <v-col class="title  pl-24">
+                        購入原価：
+                      </v-col>
+                      <v-col class="title text-end">
+                        ￥{{ pur_cost_total | numeral('0,0') }}
+                      </v-col>
+                    </v-row>
+                    <v-divider inset />
+                    <v-row>
+                      <v-col class="title  pl-24">
+                        作業原価：
+                      </v-col>
+                      <v-col class="title text-end">
+                        ￥{{ tsk_cost_total | numeral('0,0') }}
+                      </v-col>
+                    </v-row>
+                    <v-divider inset />
+                    <v-row>
+                      <v-col class="title pl-24">
+                        経費：
+                      </v-col>
+                      <v-col class="title text-end">
+                        ￥{{ 0 | numeral('0,0') }}
+                      </v-col>
+                    </v-row>
+                    <v-divider inset />
+                    <v-row>
+                      <v-col class="title pl-24">
+                        利益率：
+                      </v-col>
+                      <v-col class="title text-end">
+                        {{ total_profit | numeral('0.[00]%') }}
+                      </v-col>
+                    </v-row>
+                    <v-divider inset />
+                  </v-card-text>
+                </v-card>
+              </v-col>
+              <v-col class="px-4" cols="12" sm="12">
                 <v-textarea
                   label="説明"
                   v-model="db_data.description"
@@ -113,10 +158,16 @@
             </v-row>
           </v-card-text>
           <v-card-text>
-            <EstimateItemPurchasesHotTable :data="db_data.purchases" />
+            <EstimateItemPurchasesHotTable
+              :data="db_data.purchases"
+              @purchases-sum="onPurchasesSum"
+            />
           </v-card-text>
           <v-card-text>
-            <EstimateItemTaskHotTable :data="db_data.tasks" />
+            <EstimateItemTaskHotTable
+              :data="db_data.tasks"
+              @tasks-sum="onTasksSum"
+            />
           </v-card-text>
         </v-card>
         <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
@@ -134,6 +185,10 @@ export default {
   data: () => ({
     endpoint: '/sales/estimate/',
     db_data: null,
+    pur_est_total: 0,
+    pur_cost_total: 0,
+    tsk_est_total: 0,
+    tsk_cost_total: 0,
     loading: false,
     alert: false,
     snack: false,
@@ -147,6 +202,23 @@ export default {
     } else {
       this.getData()
     }
+  },
+
+  computed: {
+    total_amount: function() {
+      // 見積金額合計
+      return this.pur_est_total + this.tsk_est_total
+    },
+    total_cost: function() {
+      // 原価合計
+      return this.pur_cost_total + this.tsk_cost_total
+    },
+    total_profit: function() {
+      // 利益率
+      return this.total_amount
+        ? (this.total_amount - this.total_cost) / this.total_amount
+        : 0
+    },
   },
 
   methods: {
@@ -166,10 +238,8 @@ export default {
 
     updateData(endpoint, method) {
       this.alert = false
+      this.db_data.price = this.total_amount
       let item = this.db_data
-      item.tasks = this.deleteEmptyRow(item.tasks)
-      item.purchases = this.deleteEmptyRow(item.purchases)
-
       this.$store
         .dispatch('updateTableItem', { endpoint, method, item })
         .then(response => {
@@ -206,15 +276,13 @@ export default {
         this.$router.push('/estimate/')
       }
     },
-
-    // 更新処理の前にグリッドの空白行を除去する
-    deleteEmptyRow(data) {
-      return data.filter(row => {
-        for (let col in row) {
-          if (row[col]) return true
-        }
-        return false
-      })
+    onPurchasesSum(pur_est_total, pur_cost_total) {
+      this.pur_cost_total = pur_cost_total
+      this.pur_est_total = pur_est_total
+    },
+    onTasksSum(tsk_est_total, tsk_cost_total) {
+      this.tsk_est_total = tsk_est_total
+      this.tsk_cost_total = tsk_cost_total
     },
   },
 }

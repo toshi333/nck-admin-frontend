@@ -31,11 +31,18 @@ export default {
       root: 'testhot',
       hotSettings: Object.assign(ht.settings(), {
         data: this.data,
-        colHeaders: ['タスク', '見積金額', '原価', '利益率', '工数', 'メモ'],
+        colHeaders: [
+          'タスク',
+          '見積金額',
+          '作業原価',
+          '利益率',
+          '工数',
+          'メモ',
+        ],
         colWidths: [300, 100, 100, 70, 70],
         dataSchema: {
           name: null,
-          estimate_price: 0,
+          estimate_amount: 0,
           cost: 0,
           profit: 0,
           time: 0,
@@ -44,7 +51,7 @@ export default {
         columns: [
           { data: 'name', type: 'text' },
           {
-            data: 'estimate_price',
+            data: 'estimate_amount',
             type: 'numeric',
             numericFormat: { pattern: '0,0' },
           },
@@ -86,14 +93,19 @@ export default {
       this.$refs.hottbl.hotInstance.alter('insert_row', this.data.length + 1)
     },
     tableChange() {
-      this.data.forEach((row, key) => {
+      let tsk_est_total = 0
+      let tsk_cost_total = 0
+      this.data.forEach(function(row, key) {
         row.row_num = key
+        tsk_est_total += row.estimate_amount ? row.estimate_amount : 0
         row.cost = row.time * 3500
-        row.profit = row.estimate_price
-          ? (row.estimate_price - row.cost) / row.estimate_price
+        tsk_cost_total += row.cost ? row.cost : 0
+        row.profit = row.estimate_amount
+          ? (row.estimate_amount - row.cost) / row.estimate_amount
           : 0
       })
       this.$refs.hottbl.hotInstance.render()
+      this.$emit('tasks-sum', tsk_est_total, tsk_cost_total)
     },
   },
 }
